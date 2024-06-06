@@ -1,12 +1,15 @@
-import 'dart:collection';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class HttpService {
   final String apiUrl = 'http://10.0.2.2:8000/api';
 
-  Future<List<dynamic>> pilotos() async {
-    return listarDatos('pilotos');
+  Future<List<dynamic>> jugadores() async {
+    return listarDatos('jugadores');
+  }
+
+  Future<List<dynamic>> regiones() async {
+    return listarDatos('regiones');
   }
 
   Future<List<dynamic>> equipos() async {
@@ -15,7 +18,6 @@ class HttpService {
 
   Future<List<dynamic>> listarDatos(String coleccion) async {
     var respuesta = await http.get(Uri.parse(apiUrl + '/' + coleccion));
-
     if (respuesta.statusCode == 200) {
       return json.decode(respuesta.body);
     }
@@ -23,41 +25,35 @@ class HttpService {
     return [];
   }
 
-  // Future<LinkedHashMap<String, dynamic>> pilotosAgregar(String nombre, String apellido, int numero, String pais) async {
-  Future<LinkedHashMap<String, dynamic>> pilotosAgregar(String nombre,
-      String apellido, int numero, String pais, int equipo) async {
-    var url = Uri.parse('$apiUrl/pilotos');
-    var respuesta = await http.post(
-      url,
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Accept': 'application/json'
-      },
-      body: json.encode(<String, dynamic>{
-        'nombre': nombre,
-        'apellido': apellido,
-        'numero': numero,
-        'pais': pais,
-        'equipo': equipo,
-      }),
-    );
-    return json.decode(respuesta.body);
-  }
-
-  Future<List<dynamic>> paises() async {
-    var respuesta = await http.get(Uri.parse(
-        'https://restcountries.com/v3.1/all?fields=name,cca2&lang=spanish'));
-
+  Future<List<dynamic>> equiposPorRegion(int idRegion) async {
+    var respuesta =
+        await http.get(Uri.parse('$apiUrl/equipos?region_id=$idRegion'));
     if (respuesta.statusCode == 200) {
-      return json.decode(respuesta.body);
-    }
+      List<dynamic> equipos = json.decode(respuesta.body);
 
+      // Filtrar los equipos por el id de la región
+      equipos =
+          equipos.where((equipo) => equipo['region_id'] == idRegion).toList();
+
+      return equipos;
+    }
+    print(respuesta.statusCode);
     return [];
   }
 
-  Future<bool> borrarPiloto(int pilotoId) async {
-    var respuesta = await http
-        .delete(Uri.parse(apiUrl + '/pilotos/' + pilotoId.toString()));
-    return respuesta.statusCode == 200;
+  Future<List<dynamic>> obtenerJugadoresPorEquipo(int idEquipo) async {
+    var respuesta = await http.get(Uri.parse('$apiUrl/jugadores'));
+    if (respuesta.statusCode == 200) {
+      List<dynamic> jugadores = json.decode(respuesta.body);
+
+      // Filtrar los jugadores por el id del equipo
+      jugadores = jugadores
+          .where((jugador) => jugador['id_equipo'] == idEquipo)
+          .toList();
+
+      return jugadores;
+    }
+    print(respuesta.statusCode);
+    return [];
   }
 }
