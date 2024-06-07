@@ -1,4 +1,3 @@
-//import 'package:cliente_c2/pages/home_page.dart';
 import 'package:cliente_c2/pages/regiones.dart';
 import 'package:flutter/material.dart';
 

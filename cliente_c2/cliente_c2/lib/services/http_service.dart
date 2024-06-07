@@ -30,11 +30,8 @@ class HttpService {
         await http.get(Uri.parse('$apiUrl/equipos?region_id=$idRegion'));
     if (respuesta.statusCode == 200) {
       List<dynamic> equipos = json.decode(respuesta.body);
-
-      // Filtrar los equipos por el id de la región
       equipos =
           equipos.where((equipo) => equipo['region_id'] == idRegion).toList();
-
       return equipos;
     }
     print(respuesta.statusCode);
@@ -45,12 +42,9 @@ class HttpService {
     var respuesta = await http.get(Uri.parse('$apiUrl/jugadores'));
     if (respuesta.statusCode == 200) {
       List<dynamic> jugadores = json.decode(respuesta.body);
-
-      // Filtrar los jugadores por el id del equipo
       jugadores = jugadores
-          .where((jugador) => jugador['id_equipo'] == idEquipo)
+          .where((jugador) => jugador['equipo']['id'] == idEquipo)
           .toList();
-
       return jugadores;
     }
     print(respuesta.statusCode);
