@@ -1,5 +1,8 @@
+import 'package:cliente_c2/pages/calendario_page.dart';
+import 'package:cliente_c2/pages/clasificacion_page.dart';
 import 'package:cliente_c2/pages/regiones.dart';
 import 'package:flutter/material.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class AppDrawer extends StatelessWidget {
   @override
@@ -22,7 +25,7 @@ class AppDrawer extends StatelessWidget {
               ),
             ),
             ListTile(
-              leading: Icon(Icons.map),
+              leading: Icon(MdiIcons.map),
               title: Text('Regiones'),
               onTap: () {
                 Navigator.push(
@@ -34,17 +37,23 @@ class AppDrawer extends StatelessWidget {
               },
             ),
             ListTile(
-              leading: Icon(Icons.calendar_today),
+              leading: Icon(MdiIcons.calendar),
               title: Text('Calendario'),
               onTap: () {
-                Navigator.pushNamed(context, '/calendario');
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => CalendarioPage()),
+                );
               },
             ),
             ListTile(
               leading: Icon(Icons.bar_chart),
               title: Text('Clasificación'),
               onTap: () {
-                Navigator.pushNamed(context, '/clasificacion');
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ClasificacionPage()),
+                );
               },
             ),
           ],

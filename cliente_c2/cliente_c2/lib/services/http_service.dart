@@ -50,4 +50,40 @@ class HttpService {
     print(respuesta.statusCode);
     return [];
   }
+
+  Future<List<dynamic>> obtenerEncuentrosEquipos() async {
+    try {
+      final response = await http.get(Uri.parse('$apiUrl/encuentro_equipos'));
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        return data;
+      } else {
+        throw Exception('Failed to load encounters');
+      }
+    } catch (e) {
+      throw Exception('Error fetching encounters: $e');
+    }
+  }
+
+  Future<Map<String, String>> obtenerReglasPorRegion(int regionId) async {
+    var respuesta = await http.get(Uri.parse('$apiUrl/regiones/$regionId'));
+    if (respuesta.statusCode == 200) {
+      final regionData = json.decode(respuesta.body);
+      return {
+        'reglas': regionData['reglas'],
+      };
+    } else {
+      throw Exception('Failed to load rules');
+    }
+  }
+
+  Future<String> obtenerPremiosPorRegion(int regionId) async {
+    var respuesta = await http.get(Uri.parse('$apiUrl/regiones/$regionId'));
+    if (respuesta.statusCode == 200) {
+      final regionData = json.decode(respuesta.body);
+      return regionData['premios'];
+    } else {
+      throw Exception('Failed to load prizes');
+    }
+  }
 }

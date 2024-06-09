@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cliente_c2/services/http_service.dart';
 import 'package:cliente_c2/pages/detalles_jugadores_equipo_page.dart';
-import 'package:cliente_c2/widget/app_drawer.dart'; // Cambia DrawerWidget por AppDrawer
+import 'package:cliente_c2/widget/app_drawer.dart';
 
 class EquiposPorRegionesPage extends StatelessWidget {
   final List<dynamic> equipos;
@@ -19,7 +19,7 @@ class EquiposPorRegionesPage extends StatelessWidget {
       appBar: AppBar(
         title: Text('Equipos de la región $nombreRegion'),
       ),
-      drawer: AppDrawer(), // Cambia DrawerWidget por AppDrawer
+      drawer: AppDrawer(),
       body: ListView.builder(
         itemCount: equipos.length,
         itemBuilder: (context, index) {
@@ -27,14 +27,15 @@ class EquiposPorRegionesPage extends StatelessWidget {
           return ListTile(
             title: Text(equipo['nombre']),
             onTap: () async {
+              // Obtener los jugadores del equipo seleccionado
               var jugadores =
                   await httpService.obtenerJugadoresPorEquipo(equipo['id']);
+              // Navegar a la página DetallesJugadoresEquipoPage y pasar la lista de jugadores
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => DetallesJugadoresEquipoPage(
-                    jugadores: jugadores,
-                  ),
+                  builder: (context) =>
+                      DetallesJugadoresEquipoPage(jugadores: jugadores),
                 ),
               );
             },

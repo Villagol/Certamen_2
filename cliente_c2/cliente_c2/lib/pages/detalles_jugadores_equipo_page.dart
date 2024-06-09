@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cliente_c2/widget/app_drawer.dart'; // Importa el drawer
+import 'package:cliente_c2/widget/app_drawer.dart';
 
 class DetallesJugadoresEquipoPage extends StatelessWidget {
   final List<dynamic> jugadores;
@@ -12,7 +12,7 @@ class DetallesJugadoresEquipoPage extends StatelessWidget {
       appBar: AppBar(
         title: Text('Jugadores del equipo'),
       ),
-      drawer: AppDrawer(), // Añade el drawer aquí
+      drawer: AppDrawer(),
       body: ListView.builder(
         itemCount: jugadores.length,
         itemBuilder: (context, index) {
