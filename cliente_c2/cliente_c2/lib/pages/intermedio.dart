@@ -1,12 +1,13 @@
+import 'package:cliente_c2/widget/app_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:cliente_c2/services/http_service.dart';
 import 'package:cliente_c2/pages/equipos_por_regiones_page.dart';
-import 'package:cliente_c2/pages/premios_page.dart';
+
 import 'package:cliente_c2/pages/reglas_page.dart';
 
 class IntermedioPage extends StatelessWidget {
   final String nombreRegion;
-  final int regionId; // Añade el ID de la región
+  final int regionId;
 
   IntermedioPage({required this.nombreRegion, required this.regionId});
 
@@ -16,17 +17,21 @@ class IntermedioPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Intermedio'),
+        title: Text(
+          'Menú Principal',
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Color(0xFFFF4355),
       ),
+      drawer: AppDrawer(),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            ElevatedButton(
+            CustomElevatedButton(
               onPressed: () async {
                 try {
-                  // Obtener los equipos de la región seleccionada
                   List<dynamic> equipos =
                       await httpService.equiposPorRegion(regionId);
 
@@ -43,34 +48,48 @@ class IntermedioPage extends StatelessWidget {
                   print('Error al cargar los equipos: $e');
                 }
               },
-              child: Text('Ver Equipos de $nombreRegion'),
+              text: 'Ver Equipos de $nombreRegion',
             ),
-            ElevatedButton(
+            CustomElevatedButton(
               onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>
-                        ReglasPage(nombreRegion: nombreRegion),
+                    builder: (context) => ReglasPage(
+                      regionId: regionId,
+                    ),
                   ),
                 );
               },
-              child: Text('Ver Reglas de $nombreRegion'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        PremiosPage(nombreRegion: nombreRegion),
-                  ),
-                );
-              },
-              child: Text('Ver Premios de $nombreRegion'),
+              text: 'Ver detalles de $nombreRegion',
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class CustomElevatedButton extends StatelessWidget {
+  final VoidCallback onPressed;
+  final String text;
+
+  CustomElevatedButton({required this.onPressed, required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 10.0),
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          padding: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+          textStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
+        ),
+        child: Text(text),
       ),
     );
   }

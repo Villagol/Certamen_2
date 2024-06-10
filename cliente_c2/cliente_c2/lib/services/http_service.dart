@@ -65,25 +65,14 @@ class HttpService {
     }
   }
 
-  Future<Map<String, String>> obtenerReglasPorRegion(int regionId) async {
-    var respuesta = await http.get(Uri.parse('$apiUrl/regiones/$regionId'));
-    if (respuesta.statusCode == 200) {
-      final regionData = json.decode(respuesta.body);
-      return {
-        'reglas': regionData['reglas'],
-      };
-    } else {
-      throw Exception('Failed to load rules');
-    }
-  }
+  Future<Map<String, dynamic>> obtenerRegionPorId(int regionId) async {
+    final response = await http.get(Uri.parse('$apiUrl/regiones/$regionId'));
 
-  Future<String> obtenerPremiosPorRegion(int regionId) async {
-    var respuesta = await http.get(Uri.parse('$apiUrl/regiones/$regionId'));
-    if (respuesta.statusCode == 200) {
-      final regionData = json.decode(respuesta.body);
-      return regionData['premios'];
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+      return data;
     } else {
-      throw Exception('Failed to load prizes');
+      throw Exception('Error al cargar la región');
     }
   }
 }
