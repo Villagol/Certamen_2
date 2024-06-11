@@ -111,7 +111,8 @@ class _AgregarEquipoPageState extends State<AgregarEquipoPage> {
                             : '';
                       });
                     } else {
-                      Navigator.pop(context);
+                      Navigator.pop(context,
+                          true); // Retornar true al cerrar si se agregó exitosamente
                     }
                   }
                 },

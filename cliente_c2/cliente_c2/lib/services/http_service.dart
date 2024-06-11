@@ -213,4 +213,42 @@ class HttpService {
       return [];
     }
   }
+
+  Future<Map<String, dynamic>> agregarJugadorAlEquipo(
+      int equipoId,
+      String nombre,
+      String apellido,
+      String nickname,
+      String agente1,
+      String agente2,
+      String agente3) async {
+    try {
+      var url = Uri.parse('$apiUrl/equipos/$equipoId/jugadores');
+
+      var respuesta = await http.post(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Accept': 'application/json'
+        },
+        body: jsonEncode({
+          'nombre': nombre,
+          'nickname': nickname,
+          'agente_1': agente1,
+          'agente_2': agente2,
+          'agente_3': agente3,
+        }),
+      );
+
+      if (respuesta.statusCode == 201) {
+        return {'success': true};
+      } else {
+        var error = json.decode(respuesta.body);
+        return {'success': false, 'error': error};
+      }
+    } catch (error) {
+      print('Error al agregar jugador al equipo: $error');
+      return {'success': false, 'error': 'Error al agregar jugador al equipo'};
+    }
+  }
 }

@@ -33,9 +33,11 @@ class IntermedioPage extends StatelessWidget {
             BotonIntermedio(
               onPressed: () async {
                 try {
+                  // Obtener la lista de equipos
                   List<dynamic> equipos =
                       await httpService.equiposPorRegion(regionId);
 
+                  // Navegar a la página EquiposPorRegionesPage con la lista de equipos
                   Navigator.push(
                     context,
                     MaterialPageRoute(

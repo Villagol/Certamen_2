@@ -4,13 +4,11 @@ import 'package:cliente_c2/pages/detalles_jugadores_equipo_page.dart';
 import 'package:cliente_c2/widget/app_drawer.dart';
 import 'package:cliente_c2/widget/fondo.dart';
 import 'package:cliente_c2/pages/agregar_equipos.dart';
-import 'package:cliente_c2/widget/borrar_equipo_page.dart';
-import 'package:cliente_c2/widget/editar_equipo_page.dart';
+import 'package:cliente_c2/pages/editar_equipo_page.dart';
 
-class EquiposPorRegionesPage extends StatelessWidget {
+class EquiposPorRegionesPage extends StatefulWidget {
   final List<dynamic> equipos;
   final String nombreRegion;
-  final HttpService httpService = HttpService();
 
   EquiposPorRegionesPage({
     required this.equipos,
@@ -18,11 +16,18 @@ class EquiposPorRegionesPage extends StatelessWidget {
   });
 
   @override
+  _EquiposPorRegionesPageState createState() => _EquiposPorRegionesPageState();
+}
+
+class _EquiposPorRegionesPageState extends State<EquiposPorRegionesPage> {
+  final HttpService httpService = HttpService();
+
+  @override
   Widget build(BuildContext context) {
     return Fondo(
       appBar: AppBar(
         title: Text(
-          'Equipos de la región $nombreRegion',
+          'Equipos de la región ${widget.nombreRegion}',
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Color(0xFFFF4355),
@@ -32,9 +37,9 @@ class EquiposPorRegionesPage extends StatelessWidget {
         children: <Widget>[
           Expanded(
             child: ListView.builder(
-              itemCount: equipos.length,
+              itemCount: widget.equipos.length,
               itemBuilder: (context, index) {
-                var equipo = equipos[index];
+                var equipo = widget.equipos[index];
                 return ListTile(
                   title: Text(
                     equipo['nombre'],
@@ -75,15 +80,8 @@ class EquiposPorRegionesPage extends StatelessWidget {
                       IconButton(
                         icon: Icon(Icons.delete, color: Colors.white),
                         onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => BorrarEquipoPage(
-                                equipoId: equipo['id'],
-                                nombreEquipo: equipo['nombre'],
-                              ),
-                            ),
-                          );
+                          confirmarBorrado(
+                              context, equipo['id'], equipo['nombre']);
                         },
                       ),
                     ],
@@ -95,16 +93,59 @@ class EquiposPorRegionesPage extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.add, color: Colors.white),
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => AgregarEquipoPage(),
-                ),
+              MaterialPageRoute ruta = MaterialPageRoute(
+                builder: (context) => AgregarEquipoPage(),
               );
+              Navigator.push(context, ruta).then((value) {
+                setState(() {});
+              });
             },
           ),
         ],
       ),
+    );
+  }
+
+  void confirmarBorrado(
+      BuildContext context, int equipoId, String nombreEquipo) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirmar borrado'),
+          content: Text(
+              '¿Estás seguro de que quieres borrar el equipo "$nombreEquipo"?'),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancelar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Borrar'),
+              onPressed: () async {
+                try {
+                  await httpService.borrarEquipo(equipoId);
+                  Navigator.of(context).pop();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Equipo borrado con éxito')),
+                  );
+                  setState(() {
+                    widget.equipos
+                        .removeWhere((equipo) => equipo['id'] == equipoId);
+                  });
+                } catch (e) {
+                  Navigator.of(context).pop();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error al borrar el equipo: $e')),
+                  );
+                }
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }
