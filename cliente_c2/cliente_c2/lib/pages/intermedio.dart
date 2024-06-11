@@ -1,9 +1,10 @@
-import 'package:cliente_c2/widget/app_drawer.dart';
+import 'package:cliente_c2/widget/boton_intermedio.dart';
 import 'package:flutter/material.dart';
-import 'package:cliente_c2/services/http_service.dart';
+import 'package:cliente_c2/widget/app_drawer.dart';
 import 'package:cliente_c2/pages/equipos_por_regiones_page.dart';
-
 import 'package:cliente_c2/pages/reglas_page.dart';
+import 'package:cliente_c2/widget/fondo.dart';
+import 'package:cliente_c2/services/http_service.dart';
 
 class IntermedioPage extends StatelessWidget {
   final String nombreRegion;
@@ -15,7 +16,7 @@ class IntermedioPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Fondo(
       appBar: AppBar(
         title: Text(
           'Menú Principal',
@@ -24,12 +25,12 @@ class IntermedioPage extends StatelessWidget {
         backgroundColor: Color(0xFFFF4355),
       ),
       drawer: AppDrawer(),
-      body: Center(
+      child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            CustomElevatedButton(
+            BotonIntermedio(
               onPressed: () async {
                 try {
                   List<dynamic> equipos =
@@ -50,7 +51,7 @@ class IntermedioPage extends StatelessWidget {
               },
               text: 'Ver Equipos de $nombreRegion',
             ),
-            CustomElevatedButton(
+            BotonIntermedio(
               onPressed: () {
                 Navigator.push(
                   context,
@@ -65,31 +66,6 @@ class IntermedioPage extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class CustomElevatedButton extends StatelessWidget {
-  final VoidCallback onPressed;
-  final String text;
-
-  CustomElevatedButton({required this.onPressed, required this.text});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 10.0),
-      child: ElevatedButton(
-        onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-          padding: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-          textStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30),
-          ),
-        ),
-        child: Text(text),
       ),
     );
   }

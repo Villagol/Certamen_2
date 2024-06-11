@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-
 import 'package:cliente_c2/services/http_service.dart';
 import 'package:cliente_c2/widget/app_drawer.dart';
+import 'package:cliente_c2/widget/fondo.dart';
 
 class CalendarioPage extends StatefulWidget {
   @override
@@ -31,27 +31,48 @@ class _CalendarioPageState extends State<CalendarioPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Fondo(
       appBar: AppBar(
-        title: Text('Calendario de Encuentros'),
-      ),
+          title: Text(
+            'Calendario de Encuentros',
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Color(0xFFFF4355)),
       drawer: AppDrawer(),
-      body: ListView.builder(
+      child: ListView.builder(
         itemCount: _encuentros.length,
         itemBuilder: (context, index) {
           final encuentro = _encuentros[index];
-          return ListTile(
-            title: Text(
-              '${encuentro["nombre_equipo_local"]} vs ${encuentro["nombre_equipo_visitante"]}',
-            ),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Resultado: ${encuentro["resultado"]}'),
-                Text('Mapa: ${encuentro["mapa"]}'),
-                Text('Hora: ${encuentro["hora"]}'),
-                Text('Fecha: ${encuentro["fecha"]}'),
-              ],
+          return Padding(
+            padding:
+                const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: ListTile(
+                title: Text(
+                  '${encuentro["nombre_equipo_local"]} vs ${encuentro["nombre_equipo_visitante"]}',
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold),
+                ),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Resultado: ${encuentro["resultado"]}',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    Text('Mapa: ${encuentro["mapa"]}',
+                        style: TextStyle(color: Colors.white)),
+                    Text('Hora: ${encuentro["hora"]}',
+                        style: TextStyle(color: Colors.white)),
+                    Text('Fecha: ${encuentro["fecha"]}',
+                        style: TextStyle(color: Colors.white)),
+                  ],
+                ),
+              ),
             ),
           );
         },
