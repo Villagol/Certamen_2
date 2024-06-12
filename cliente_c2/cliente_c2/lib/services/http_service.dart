@@ -66,10 +66,10 @@ class HttpService {
   }
 
   Future<Map<String, dynamic>> obtenerRegionPorId(int regionId) async {
-    final response = await http.get(Uri.parse('$apiUrl/regiones/$regionId'));
+    final respuesta = await http.get(Uri.parse('$apiUrl/regiones/$regionId'));
 
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> data = json.decode(response.body);
+    if (respuesta.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(respuesta.body);
       return data;
     } else {
       throw Exception('Error al cargar la región');
@@ -77,25 +77,29 @@ class HttpService {
   }
 
   Future<void> borrarEquipo(int equipoId) async {
-    // Endpoint para borrar un equipo
     final String url = '$apiUrl/equipos/$equipoId';
 
     try {
-      // Realizar la solicitud DELETE
       final response = await http.delete(Uri.parse(url));
 
-      // Verificar si la solicitud fue exitosa
       if (response.statusCode == 200) {
-        // Equipo borrado exitosamente
         print('Equipo borrado exitosamente');
       } else {
-        // Hubo un error al borrar el equipo
         throw Exception('Error al borrar el equipo: ${response.statusCode}');
       }
     } catch (e) {
-      // Capturar y manejar cualquier error
       print('Error al borrar el equipo: $e');
       rethrow;
+    }
+  }
+
+  Future<String?> borrarJugador(int jugadorId) async {
+    final response = await http
+        .delete(Uri.parse(apiUrl + '/jugadores/' + jugadorId.toString()));
+    if (response.statusCode == 200) {
+      return null;
+    } else {
+      return 'Error al borrar el jugador: ${response.statusCode}';
     }
   }
 
@@ -176,6 +180,46 @@ class HttpService {
     }
   }
 
+  Future<Map<String, dynamic>> agregarJugadors(
+      String nombre,
+      String apellido,
+      String nickname,
+      String agente1,
+      String agente2,
+      String agente3,
+      String equipo) async {
+    try {
+      var url = Uri.parse('$apiUrl/jugadores');
+
+      var respuesta = await http.post(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Accept': 'application/json'
+        },
+        body: jsonEncode({
+          'nombre': nombre,
+          'apellido': apellido,
+          'nickname': nickname,
+          'agente_1': agente1,
+          'agente_2': agente2,
+          'agente_3': agente3,
+        }),
+      );
+
+      if (respuesta.statusCode == 201) {
+        var nuevoJugador = json.decode(respuesta.body);
+        return {'success': true, 'jugador': nuevoJugador};
+      } else {
+        var error = json.decode(respuesta.body);
+        return {'success': false, 'error': error};
+      }
+    } catch (error) {
+      print('Error al agregar jugador: $error');
+      return {'success': false, 'error': 'Error al agregar jugador'};
+    }
+  }
+
   Future<Map<String, dynamic>> actualizarEquipo(
       int equipoId, String nombre, String entrenador) async {
     final response = await http.put(
@@ -214,16 +258,34 @@ class HttpService {
     }
   }
 
-  Future<Map<String, dynamic>> agregarJugadorAlEquipo(
-      int equipoId,
+  Future<List<String>> obtenerEquipos() async {
+    try {
+      var respuesta = await http.get(Uri.parse('$apiUrl/equipos'));
+
+      if (respuesta.statusCode == 200) {
+        var data = jsonDecode(respuesta.body) as List<dynamic>;
+        List<String> nombresEquipos =
+            data.map<String>((equipo) => equipo['nombre'].toString()).toList();
+        return nombresEquipos;
+      } else {
+        return [];
+      }
+    } catch (error) {
+      print('Error al obtener los equipos: $error');
+      return [];
+    }
+  }
+
+  Future<Map<String, dynamic>> agregarJugador(
       String nombre,
       String apellido,
       String nickname,
       String agente1,
       String agente2,
-      String agente3) async {
+      String agente3,
+      String equipo) async {
     try {
-      var url = Uri.parse('$apiUrl/equipos/$equipoId/jugadores');
+      var url = Uri.parse('$apiUrl/jugadores');
 
       var respuesta = await http.post(
         url,
@@ -233,22 +295,78 @@ class HttpService {
         },
         body: jsonEncode({
           'nombre': nombre,
+          'apellido': apellido,
           'nickname': nickname,
           'agente_1': agente1,
           'agente_2': agente2,
           'agente_3': agente3,
+          'equipo_id': equipo,
         }),
       );
 
       if (respuesta.statusCode == 201) {
-        return {'success': true};
+        var nuevoJugador = json.decode(respuesta.body);
+        return {'success': true, 'jugador': nuevoJugador};
       } else {
         var error = json.decode(respuesta.body);
         return {'success': false, 'error': error};
       }
     } catch (error) {
-      print('Error al agregar jugador al equipo: $error');
-      return {'success': false, 'error': 'Error al agregar jugador al equipo'};
+      print('Error al agregar jugador: $error');
+      return {'success': false, 'error': 'Error al agregar jugador'};
+    }
+  }
+
+  Future<void> crearEncuentro(Map<String, dynamic> datosEncuentro) async {
+    final response = await http.post(
+      Uri.parse('$apiUrl/encuentros'),
+      body: jsonEncode(datosEncuentro),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      print('Encuentro creado exitosamente');
+    } else {
+      final responseBody = json.decode(response.body);
+      throw Exception(
+          'Error al crear el encuentro: ${response.statusCode} - ${responseBody['message'] ?? 'Sin mensaje'}');
+    }
+  }
+
+  Future<void> actualizarEncuentro(int idEncuentroEquipos,
+      Map<String, dynamic> datosEncuentroEquipos) async {
+    final response = await http.put(
+      Uri.parse('$apiUrl/encuentroEquipos/$idEncuentroEquipos'),
+      body: jsonEncode(datosEncuentroEquipos),
+      headers: {'Content-Type': 'application/json'},
+    );
+    if (response.statusCode != 200) {
+      throw Exception(
+          'Error al actualizar el encuentro: ${response.statusCode}');
+    }
+  }
+
+  Future<void> eliminarEncuentro(int idEncuentro) async {
+    final response =
+        await http.delete(Uri.parse('$apiUrl/encuentros/$idEncuentro'));
+    if (response.statusCode != 200) {
+      throw Exception('Error al eliminar el encuentro: ${response.statusCode}');
+    }
+  }
+
+  Future<List<String>> obtenerMapas() async {
+    try {
+      final response = await http.get(Uri.parse('$apiUrl/mapas'));
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        List<String> nombresMapas =
+            data.map<String>((mapa) => mapa.toString()).toList();
+        return nombresMapas;
+      } else {
+        throw Exception('Failed to load maps');
+      }
+    } catch (e) {
+      throw Exception('Error fetching maps: $e');
     }
   }
 }

@@ -80,7 +80,7 @@ class _EquiposPorRegionesPageState extends State<EquiposPorRegionesPage> {
                       IconButton(
                         icon: Icon(Icons.delete, color: Colors.white),
                         onPressed: () {
-                          confirmarBorrado(
+                          _confirmDelete(
                               context, equipo['id'], equipo['nombre']);
                         },
                       ),
@@ -106,8 +106,7 @@ class _EquiposPorRegionesPageState extends State<EquiposPorRegionesPage> {
     );
   }
 
-  void confirmarBorrado(
-      BuildContext context, int equipoId, String nombreEquipo) {
+  void _confirmDelete(BuildContext context, int equipoId, String nombreEquipo) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
