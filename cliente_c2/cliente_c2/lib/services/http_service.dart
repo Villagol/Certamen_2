@@ -383,4 +383,26 @@ class HttpService {
       throw Exception('Network error');
     }
   }
+
+  Future<void> editarJugador(
+      int jugadorId, Map<String, dynamic> nuevoJugador) async {
+    final String url = '$apiUrl/jugadores/$jugadorId';
+
+    try {
+      final response = await http.put(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(nuevoJugador),
+      );
+
+      if (response.statusCode != 200) {
+        final responseBody = json.decode(response.body);
+        throw Exception(
+            'Error al editar el jugador: ${response.statusCode} - ${responseBody['message'] ?? 'Sin mensaje'}');
+      }
+    } catch (e) {
+      print('Error al editar el jugador: $e');
+      throw Exception('Error al editar el jugador: $e');
+    }
+  }
 }
