@@ -160,7 +160,7 @@ class _CrearEncuentroPageState extends State<CrearEncuentroPage> {
         'fecha': _fechaController.text,
       };
       await _httpService.crearEncuentroEquipo(nuevoEncuentroEquipo);
-      Navigator.pop(context); // Regresar a la página anterior
+      Navigator.pop(context);
     } catch (e) {
       print('Error al crear el encuentro de equipo: $e');
       showDialog(
@@ -171,7 +171,7 @@ class _CrearEncuentroPageState extends State<CrearEncuentroPage> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.pop(context); // Cerrar el diálogo
+                Navigator.pop(context);
               },
               child: Text('OK'),
             ),

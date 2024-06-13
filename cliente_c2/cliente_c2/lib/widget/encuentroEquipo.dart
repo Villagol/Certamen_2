@@ -17,7 +17,6 @@ class EncuentroEquipo {
     required this.equipoVisitante,
   });
 
-  // Método para convertir a JSON
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -30,7 +29,6 @@ class EncuentroEquipo {
     };
   }
 
-  // Factory method para crear desde un JSON
   factory EncuentroEquipo.fromJson(Map<String, dynamic> json) {
     return EncuentroEquipo(
       id: json['id'],

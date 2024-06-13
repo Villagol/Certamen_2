@@ -18,7 +18,7 @@ class _EditarEncuentroPageState extends State<EditarEncuentroPage> {
   @override
   void initState() {
     super.initState();
-    // Inicializar los controladores con los valores actuales de fecha y hora
+
     _fechaController = TextEditingController(text: widget.encuentro['fecha']);
     _horaController = TextEditingController(text: widget.encuentro['hora']);
   }

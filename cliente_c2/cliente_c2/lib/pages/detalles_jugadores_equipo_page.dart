@@ -148,8 +148,7 @@ class _DetallesJugadoresEquipoPageState
         backgroundColor: Color(0xFFFF4355),
         child: Icon(Icons.add),
       ),
-      floatingActionButtonLocation:
-          FloatingActionButtonLocation.endDocked, // Posición del botón flotante
+      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
     );
   }
 }

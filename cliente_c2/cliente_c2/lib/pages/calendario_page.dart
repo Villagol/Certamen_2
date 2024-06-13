@@ -52,6 +52,24 @@ class _CalendarioPageState extends State<CalendarioPage> {
     );
   }
 
+  Future<void> _editarResultadoEncuentro(
+      int encuentroId, String nuevoResultado) async {
+    try {
+      await _httpService.editarResultadoEncuentro(encuentroId, nuevoResultado);
+      _cargarEncuentros();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Resultado del encuentro actualizado correctamente'),
+        duration: Duration(seconds: 2),
+      ));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Error al actualizar resultado del encuentro'),
+        duration: Duration(seconds: 2),
+      ));
+      print('Error al actualizar resultado: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -117,6 +135,16 @@ class _CalendarioPageState extends State<CalendarioPage> {
                         icon: Icon(Icons.delete, color: Colors.black),
                         onPressed: () => _eliminarEncuentro(encuentro['id']),
                       ),
+                      IconButton(
+                        icon: Icon(Icons.edit_attributes, color: Colors.black),
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) => _buildEditarResultadoDialog(
+                                context, encuentro['id']),
+                          );
+                        },
+                      ),
                     ],
                   ),
                 ),
@@ -137,6 +165,35 @@ class _CalendarioPageState extends State<CalendarioPage> {
         backgroundColor: Color(0xFFFF4355),
         child: Icon(Icons.add),
       ),
+    );
+  }
+
+  Widget _buildEditarResultadoDialog(BuildContext context, int encuentroId) {
+    TextEditingController resultadoController = TextEditingController();
+
+    return AlertDialog(
+      title: Text('Editar Resultado'),
+      content: TextField(
+        controller: resultadoController,
+        decoration: InputDecoration(
+          hintText: 'Nuevo resultado',
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: Text('Cancelar'),
+        ),
+        TextButton(
+          onPressed: () {
+            _editarResultadoEncuentro(encuentroId, resultadoController.text);
+            Navigator.of(context).pop();
+          },
+          child: Text('Guardar'),
+        ),
+      ],
     );
   }
 }

@@ -26,7 +26,7 @@ class _EditarEquipoPageState extends State<EditarEquipoPage> {
 
   late TextEditingController _nombreController;
   late TextEditingController _entrenadorController;
-  int? _regionSeleccionada; // Cambio aquí: Inicializado como null
+  int? _regionSeleccionada;
   List<String> _regiones = ['Americas', 'EMEA', 'China'];
   Map<String, int> _regionMap = {
     'Americas': 1,
@@ -40,7 +40,7 @@ class _EditarEquipoPageState extends State<EditarEquipoPage> {
     _nombreController = TextEditingController(text: widget.nombreActual);
     _entrenadorController =
         TextEditingController(text: widget.entrenadorActual);
-    _regionSeleccionada = null; // Cambio aquí: Inicializado como null
+    _regionSeleccionada = null;
   }
 
   @override
