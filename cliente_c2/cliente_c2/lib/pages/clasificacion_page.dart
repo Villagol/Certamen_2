@@ -10,7 +10,7 @@ class ClasificacionPage extends StatefulWidget {
 class _ClasificacionPageState extends State<ClasificacionPage> {
   final HttpService httpService = HttpService();
   List<dynamic> equipos =
-      []; // Lista para almacenar todos los equipos con puntos
+      []; 
 
   @override
   void initState() {
@@ -21,10 +21,10 @@ class _ClasificacionPageState extends State<ClasificacionPage> {
   Future<void> _cargarEquiposConPuntos() async {
     try {
       equipos = await httpService.obtenerTodosLosEquiposConPuntos();
-      setState(() {}); // Actualizar la UI después de obtener los equipos
+      setState(() {}); 
     } catch (e) {
       print('Error al obtener equipos: $e');
-      // Manejo de errores si es necesario
+
     }
   }
 
@@ -57,7 +57,7 @@ class _ClasificacionPageState extends State<ClasificacionPage> {
             style: TextStyle(color: Colors.white),
           ),
           trailing: Text(
-            'Puntos: ${equipo['puntos'] ?? ''}', // Asegúrate de manejar el caso donde puntos pueden ser null
+            'Puntos: ${equipo['puntos'] ?? ''}', 
             style: TextStyle(color: Colors.white),
           ),
         );

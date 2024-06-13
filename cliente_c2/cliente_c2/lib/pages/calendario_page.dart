@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cliente_c2/pages/crear_encuentro_page.dart';
-import 'package:cliente_c2/pages/editar_encuentro_page.dart'; // Importa la página de edición
+import 'package:cliente_c2/pages/editar_encuentro_page.dart'; 
 import 'package:cliente_c2/services/http_service.dart';
 import 'package:cliente_c2/widget/app_drawer.dart';
 import 'package:cliente_c2/widget/fondo.dart';
@@ -34,14 +34,13 @@ class _CalendarioPageState extends State<CalendarioPage> {
   Future<void> _eliminarEncuentro(int idEncuentro) async {
     try {
       await _httpService.eliminarEncuentro(idEncuentro);
-      _cargarEncuentros(); // Recargar la lista de encuentros
+      _cargarEncuentros(); 
     } catch (e) {
       print('Error al eliminar el encuentro: $e');
     }
   }
 
   Future<void> _editarEncuentro(dynamic encuentro) async {
-    // Navegar a la página de edición y pasar los datos actuales del encuentro
     Navigator.push(
       context,
       MaterialPageRoute(

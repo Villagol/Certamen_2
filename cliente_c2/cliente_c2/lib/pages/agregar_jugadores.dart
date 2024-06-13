@@ -1,4 +1,4 @@
-// Código de Flutter con la comparación del nombre del equipo seleccionado con la lista de IDs
+
 
 import 'package:flutter/material.dart';
 import 'package:cliente_c2/services/http_service.dart';
@@ -23,7 +23,7 @@ class _AgregarJugadoresState extends State<AgregarJugadores> {
 
   String errorMessage = "";
 
-  // Lista de correspondencia entre nombres de equipos y sus IDs
+
   final Map<String, String> equipos = {
     "KRÜ Visa": "1",
     "Cloud 9": "2",
