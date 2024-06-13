@@ -1,5 +1,6 @@
-import 'package:cliente_c2/pages/crear_encuentro_page.dart';
 import 'package:flutter/material.dart';
+import 'package:cliente_c2/pages/crear_encuentro_page.dart';
+import 'package:cliente_c2/pages/editar_encuentro_page.dart'; // Importa la página de edición
 import 'package:cliente_c2/services/http_service.dart';
 import 'package:cliente_c2/widget/app_drawer.dart';
 import 'package:cliente_c2/widget/fondo.dart';
@@ -32,12 +33,23 @@ class _CalendarioPageState extends State<CalendarioPage> {
 
   Future<void> _eliminarEncuentro(int idEncuentro) async {
     try {
-      // Lógica para eliminar un encuentro
       await _httpService.eliminarEncuentro(idEncuentro);
       _cargarEncuentros(); // Recargar la lista de encuentros
     } catch (e) {
       print('Error al eliminar el encuentro: $e');
     }
+  }
+
+  Future<void> _editarEncuentro(dynamic encuentro) async {
+    // Navegar a la página de edición y pasar los datos actuales del encuentro
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EditarEncuentroPage(
+          encuentro: encuentro,
+        ),
+      ),
+    );
   }
 
   @override
@@ -65,7 +77,7 @@ class _CalendarioPageState extends State<CalendarioPage> {
                 ),
                 child: ListTile(
                   title: Text(
-                    '${encuentro["nombre_equipo_local"]} vs ${encuentro["nombre_equipo_visitante"]}',
+                    'Encuentro ${encuentro["id"]}: ${encuentro["nombre_equipo_local"]} vs ${encuentro["nombre_equipo_visitante"]}',
                     style: TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
@@ -92,9 +104,20 @@ class _CalendarioPageState extends State<CalendarioPage> {
                       ),
                     ],
                   ),
-                  trailing: IconButton(
-                    icon: Icon(Icons.delete, color: Colors.black),
-                    onPressed: () => _eliminarEncuentro(encuentro['id']),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.edit, color: Colors.black),
+                        onPressed: () {
+                          _editarEncuentro(encuentro);
+                        },
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.delete, color: Colors.black),
+                        onPressed: () => _eliminarEncuentro(encuentro['id']),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -108,7 +131,7 @@ class _CalendarioPageState extends State<CalendarioPage> {
             context,
             MaterialPageRoute(builder: (context) => CrearEncuentroPage()),
           ).then((value) {
-            _cargarEncuentros(); // Recargar la lista de encuentros al regresar
+            _cargarEncuentros();
           });
         },
         backgroundColor: Color(0xFFFF4355),

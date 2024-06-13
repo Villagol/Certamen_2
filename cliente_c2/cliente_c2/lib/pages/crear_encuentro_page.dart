@@ -51,22 +51,12 @@ class _CrearEncuentroPageState extends State<CrearEncuentroPage> {
     }).toList();
   }
 
-  List<Widget> _buildSelectedItems(List<String> items) {
-    return items.map<Widget>((String value) {
-      return Text(
-        value,
-        style: TextStyle(
-            color: Colors.white), // Color del texto cuando está seleccionado
-      );
-    }).toList();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Crear Encuentro',
+          'Crear Encuentro de Equipo',
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Color(0xFFFF4355),
@@ -84,9 +74,6 @@ class _CrearEncuentroPageState extends State<CrearEncuentroPage> {
                 });
               },
               items: _buildDropdownItems(_equiposLocales),
-              selectedItemBuilder: (BuildContext context) {
-                return _buildSelectedItems(_equiposLocales);
-              },
               decoration: InputDecoration(
                 labelText: 'Equipo Local',
                 labelStyle: TextStyle(color: Colors.white),
@@ -104,9 +91,6 @@ class _CrearEncuentroPageState extends State<CrearEncuentroPage> {
                 });
               },
               items: _buildDropdownItems(_equiposVisitantes),
-              selectedItemBuilder: (BuildContext context) {
-                return _buildSelectedItems(_equiposVisitantes);
-              },
               decoration: InputDecoration(
                 labelText: 'Equipo Visitante',
                 labelStyle: TextStyle(color: Colors.white),
@@ -124,9 +108,6 @@ class _CrearEncuentroPageState extends State<CrearEncuentroPage> {
                 });
               },
               items: _buildDropdownItems(_mapas),
-              selectedItemBuilder: (BuildContext context) {
-                return _buildSelectedItems(_mapas);
-              },
               decoration: InputDecoration(
                 labelText: 'Mapa',
                 labelStyle: TextStyle(color: Colors.white),
@@ -147,7 +128,7 @@ class _CrearEncuentroPageState extends State<CrearEncuentroPage> {
               ),
               style: TextStyle(color: Colors.white),
             ),
-            TextField(
+            TextFormField(
               controller: _resultadoController,
               decoration: InputDecoration(
                 labelText: 'Resultado',
@@ -160,8 +141,8 @@ class _CrearEncuentroPageState extends State<CrearEncuentroPage> {
             ),
             SizedBox(height: 16.0),
             ElevatedButton(
-              onPressed: _crearEncuentro,
-              child: Text('Crear Encuentro'),
+              onPressed: _crearEncuentroEquipo,
+              child: Text('Crear Encuentro de Equipo'),
             ),
           ],
         ),
@@ -169,20 +150,34 @@ class _CrearEncuentroPageState extends State<CrearEncuentroPage> {
     );
   }
 
-  Future<void> _crearEncuentro() async {
+  Future<void> _crearEncuentroEquipo() async {
     try {
-      final nuevoEncuentro = {
-        'equipo_local': _equipoLocal,
-        'equipo_visitante': _equipoVisitante,
+      final nuevoEncuentroEquipo = {
+        'nombre_equipo_local': _equipoLocal,
+        'nombre_equipo_visitante': _equipoVisitante,
         'resultado': _resultadoController.text,
         'mapa': _mapa,
-        'fecha':
-            _fechaController.text.isNotEmpty ? _fechaController.text : null,
+        'fecha': _fechaController.text,
       };
-      await _httpService.crearEncuentro(nuevoEncuentro);
+      await _httpService.crearEncuentroEquipo(nuevoEncuentroEquipo);
       Navigator.pop(context); // Regresar a la página anterior
     } catch (e) {
-      print('Error al crear el encuentro: $e');
+      print('Error al crear el encuentro de equipo: $e');
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Error'),
+          content: Text('Error al crear el encuentro de equipo: $e'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Cerrar el diálogo
+              },
+              child: Text('OK'),
+            ),
+          ],
+        ),
+      );
     }
   }
 }

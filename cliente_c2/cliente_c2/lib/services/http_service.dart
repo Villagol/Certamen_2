@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:http/http.dart' as http;
 
 class HttpService {
@@ -112,25 +113,6 @@ class HttpService {
     }
   }
 
-  Future<void> editarEquipo(
-      int equipoId, Map<String, dynamic> nuevoEquipo, String apiUrl) async {
-    final String url = '$apiUrl/equipos/$equipoId';
-
-    try {
-      final response = await http.put(
-        Uri.parse(url),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode(nuevoEquipo),
-      );
-
-      if (response.statusCode != 200) {
-        throw Exception('Error al editar el equipo con ID $equipoId');
-      }
-    } catch (e) {
-      throw Exception('Error al editar el equipo: $e');
-    }
-  }
-
   Future<Map<String, dynamic>> agregarEquipo(
       String nombre, String entrenador, String region) async {
     try {
@@ -220,26 +202,6 @@ class HttpService {
     }
   }
 
-  Future<Map<String, dynamic>> actualizarEquipo(
-      int equipoId, String nombre, String entrenador) async {
-    final response = await http.put(
-      Uri.parse('$apiUrl/equipos/$equipoId'),
-      body: {
-        'nombre': nombre,
-        'entrenador': entrenador,
-      },
-    );
-
-    if (response.statusCode == 200) {
-      // Si la solicitud es exitosa, devolver el cuerpo de la respuesta
-      return {'message': 'Equipo actualizado correctamente'};
-    } else {
-      // Si la solicitud falla, lanzar una excepción
-      throw Exception(
-          'Error al actualizar el equipo: ${response.reasonPhrase}');
-    }
-  }
-
   Future<List<String>> obtenerRegiones() async {
     try {
       var respuesta = await http.get(Uri.parse('$apiUrl/regiones'));
@@ -317,40 +279,71 @@ class HttpService {
     }
   }
 
-  Future<void> crearEncuentro(Map<String, dynamic> datosEncuentro) async {
-    final response = await http.post(
-      Uri.parse('$apiUrl/encuentros'),
-      body: jsonEncode(datosEncuentro),
-      headers: {'Content-Type': 'application/json'},
-    );
+  Future<void> crearEncuentroEquipo(
+      Map<String, dynamic> nuevoEncuentroEquipo) async {
+    final url = Uri.parse('$apiUrl/encuentro_equipos');
 
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      print('Encuentro creado exitosamente');
-    } else {
-      final responseBody = json.decode(response.body);
-      throw Exception(
-          'Error al crear el encuentro: ${response.statusCode} - ${responseBody['message'] ?? 'Sin mensaje'}');
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(nuevoEncuentroEquipo),
+      );
+
+      if (response.statusCode == 201) {
+        print('Encuentro de equipo creado correctamente');
+      } else {
+        final responseBody = json.decode(response.body);
+        throw Exception(
+            'Error al crear el encuentro de equipo: ${response.statusCode} - ${responseBody['message'] ?? 'Sin mensaje'}');
+      }
+    } catch (e) {
+      print('Error al crear el encuentro de equipo: $e');
+      throw Exception('Error al crear el encuentro de equipo: $e');
     }
   }
 
-  Future<void> actualizarEncuentro(int idEncuentroEquipos,
-      Map<String, dynamic> datosEncuentroEquipos) async {
-    final response = await http.put(
-      Uri.parse('$apiUrl/encuentroEquipos/$idEncuentroEquipos'),
-      body: jsonEncode(datosEncuentroEquipos),
-      headers: {'Content-Type': 'application/json'},
-    );
-    if (response.statusCode != 200) {
-      throw Exception(
-          'Error al actualizar el encuentro: ${response.statusCode}');
+  Future<void> actualizarEncuentro(
+      int idEncuentro, Map<String, dynamic> body) async {
+    final String url =
+        '$apiUrl/encuentro_equipos/$idEncuentro'; // URL completa para actualizar el encuentro
+
+    try {
+      final response = await http.put(
+        Uri.parse(url),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(body),
+      );
+
+      if (response.statusCode == 200) {
+        print('Encuentro actualizado correctamente');
+      } else {
+        // Si la solicitud falla, lanzar una excepción con el mensaje de error
+        throw Exception(
+            'Error al actualizar el encuentro: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error al comunicarse con el servidor: $e');
     }
   }
 
   Future<void> eliminarEncuentro(int idEncuentro) async {
-    final response =
-        await http.delete(Uri.parse('$apiUrl/encuentros/$idEncuentro'));
-    if (response.statusCode != 200) {
-      throw Exception('Error al eliminar el encuentro: ${response.statusCode}');
+    try {
+      final response = await http.delete(
+        Uri.parse('$apiUrl/encuentro_equipos/$idEncuentro'),
+        headers: {'Content-Type': 'application/json'},
+      );
+      if (response.statusCode == 200) {
+        print('Encuentro eliminado correctamente');
+      } else {
+        throw Exception(
+            'Error al eliminar el encuentro: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error en la solicitud DELETE: $e');
+      throw Exception('Error al eliminar el encuentro: $e');
     }
   }
 
@@ -367,6 +360,179 @@ class HttpService {
       }
     } catch (e) {
       throw Exception('Error fetching maps: $e');
+    }
+  }
+
+  Future<void> editarJugador(
+      int jugadorId, Map<String, dynamic> nuevoJugador) async {
+    final String url = '$apiUrl/jugadores/$jugadorId';
+
+    try {
+      final response = await http.put(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(nuevoJugador),
+      );
+
+      if (response.statusCode != 200) {
+        final responseBody = json.decode(response.body);
+        throw Exception(
+            'Error al editar el jugador: ${response.statusCode} - ${responseBody['message'] ?? 'Sin mensaje'}');
+      }
+    } catch (e) {
+      print('Error al editar el jugador: $e');
+      throw Exception('Error al editar el jugador: $e');
+    }
+  }
+
+  Future<void> editarEquipo(
+      int equipoId, Map<String, dynamic> nuevoEquipo) async {
+    final String url = '$apiUrl/equipos/$equipoId';
+
+    try {
+      final response = await http.put(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(nuevoEquipo),
+      );
+
+      if (response.statusCode == 200) {
+        print('Equipo actualizado correctamente');
+      } else {
+        final responseBody = json.decode(response.body);
+        throw Exception(
+            'Error al editar el equipo: ${response.statusCode} - ${responseBody['message'] ?? 'Sin mensaje'}');
+      }
+    } catch (e) {
+      print('Error al editar el equipo: $e');
+      throw Exception('Error al editar el equipo: $e');
+    }
+  }
+
+  Future<List<dynamic>> obtenerTodosLosEquiposConPuntos() async {
+    try {
+      var response = await http.get(Uri.parse('$apiUrl/equipos'));
+
+      if (response.statusCode == 200) {
+        List<dynamic> equipos = jsonDecode(response.body);
+        equipos.forEach((equipo) {
+          // Asignar puntos aleatorios entre 1 y 50
+          equipo['puntos'] = Random().nextInt(50) + 1;
+        });
+
+        // Ordenar equipos por puntos de manera descendente
+        equipos.sort((a, b) => b['puntos'].compareTo(a['puntos']));
+
+        return equipos;
+      } else {
+        throw Exception('Error al obtener equipos: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error en la solicitud HTTP: $e');
+      throw Exception('Error en la solicitud HTTP: $e');
+    }
+  }
+
+  Future<void> editarResultadoFechaEncuentro({
+    required int encuentroId,
+    required Map<String, String> datosActualizados,
+  }) async {
+    try {
+      final url = Uri.parse(
+          '$apiUrl/encuentro_equipos/$encuentroId'); // Ajusta la URL según tu API
+      final response = await http.patch(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(datosActualizados),
+      );
+
+      if (response.statusCode == 200) {
+        print('Encuentro actualizado exitosamente');
+      } else {
+        throw Exception(
+            'Error al actualizar el encuentro: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error al actualizar el encuentro: $e');
+    }
+  }
+
+  Future<void> editarResultadoEncuentro(
+      int encuentroEquipoId, String nuevoResultado) async {
+    try {
+      final url = Uri.parse(
+          '$apiUrl/encuentro_equipos/$encuentroEquipoId'); // Asegúrate de que la URL sea correcta
+      final response = await http.patch(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode({
+          'resultado': nuevoResultado,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        print('Resultado del encuentro actualizado exitosamente');
+      } else {
+        throw Exception(
+            'Error al actualizar el resultado del encuentro: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error al actualizar el resultado del encuentro: $e');
+    }
+  }
+
+  Future<void> editarEncuentro(
+      int encuentroId, Map<String, dynamic> datosActualizados) async {
+    try {
+      final url = Uri.parse(
+          '$apiUrl/encuentro_equipos/$encuentroId'); // URL para editar encuentro por ID
+      final response = await http.put(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(datosActualizados),
+      );
+
+      if (response.statusCode == 200) {
+        print('Encuentro actualizado exitosamente');
+      } else {
+        throw Exception(
+            'Error al actualizar el encuentro: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error al actualizar el encuentro: $e');
+    }
+  }
+
+  Future<void> editarFechaHoraEncuentro(
+      int encuentroId, String nuevaFecha, String nuevaHora) async {
+    try {
+      final url = Uri.parse(
+          '$apiUrl/encuentro_equipos/$encuentroId'); // URL para editar encuentro por ID
+      final response = await http.put(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode({
+          'fecha': nuevaFecha,
+          'hora': nuevaHora,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        print('Fecha y hora del encuentro actualizados exitosamente');
+      } else {
+        throw Exception(
+            'Error al actualizar la fecha y hora del encuentro: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error al actualizar la fecha y hora del encuentro: $e');
     }
   }
 }

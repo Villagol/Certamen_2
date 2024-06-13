@@ -24,7 +24,7 @@ class _EquiposPorRegionesPageState extends State<EquiposPorRegionesPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Fondo(
+    return Scaffold(
       appBar: AppBar(
         title: Text(
           'Equipos de la región ${widget.nombreRegion}',
@@ -33,75 +33,88 @@ class _EquiposPorRegionesPageState extends State<EquiposPorRegionesPage> {
         backgroundColor: Color(0xFFFF4355),
       ),
       drawer: AppDrawer(),
-      child: Column(
-        children: <Widget>[
-          Expanded(
-            child: ListView.builder(
-              itemCount: widget.equipos.length,
-              itemBuilder: (context, index) {
-                var equipo = widget.equipos[index];
-                return ListTile(
-                  title: Text(
-                    equipo['nombre'],
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold, color: Colors.white),
-                  ),
-                  subtitle: Text(
-                    'Entrenador: ' + equipo['entrenador'],
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  onTap: () async {
-                    var jugadores = await httpService
-                        .obtenerJugadoresPorEquipo(equipo['id']);
+      body: Fondo(
+        child: Column(
+          children: <Widget>[
+            Expanded(
+              child: ListView.builder(
+                itemCount: widget.equipos.length,
+                itemBuilder: (context, index) {
+                  var equipo = widget.equipos[index];
+                  return ListTile(
+                    title: Text(
+                      equipo['nombre'],
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.white),
+                    ),
+                    subtitle: Text(
+                      'Entrenador: ' + equipo['entrenador'],
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    onTap: () async {
+                      var jugadores = await httpService
+                          .obtenerJugadoresPorEquipo(equipo['id']);
 
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            DetallesJugadoresEquipoPage(jugadores: jugadores),
-                      ),
-                    );
-                  },
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: Icon(Icons.edit, color: Colors.white),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  EditarEquipoPage(equipoId: equipo['id']),
-                            ),
-                          );
-                        },
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.delete, color: Colors.white),
-                        onPressed: () {
-                          _confirmDelete(
-                              context, equipo['id'], equipo['nombre']);
-                        },
-                      ),
-                    ],
-                  ),
-                );
-              },
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              DetallesJugadoresEquipoPage(jugadores: jugadores),
+                        ),
+                      );
+                    },
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.edit, color: Colors.white),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => EditarEquipoPage(
+                                  equipoId: equipo['id'],
+                                  nombreActual: equipo['nombre'],
+                                  entrenadorActual: equipo['entrenador'],
+                                  regionIdActual: equipo['region_id'],
+                                ),
+                              ),
+                            ).then((value) {
+                              if (value == true) {
+                                setState(() {});
+                              }
+                            });
+                          },
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.delete, color: Colors.white),
+                          onPressed: () {
+                            _confirmDelete(
+                                context, equipo['id'], equipo['nombre']);
+                          },
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
             ),
-          ),
-          IconButton(
-            icon: Icon(Icons.add, color: Colors.white),
-            onPressed: () {
-              MaterialPageRoute ruta = MaterialPageRoute(
-                builder: (context) => AgregarEquipoPage(),
-              );
-              Navigator.push(context, ruta).then((value) {
-                setState(() {});
-              });
-            },
-          ),
-        ],
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AgregarEquipoPage(),
+            ),
+          ).then((value) {
+            setState(() {});
+          });
+        },
+        backgroundColor: Color(0xFFFF4355),
+        child: Icon(Icons.add),
       ),
     );
   }
